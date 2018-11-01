@@ -7,6 +7,7 @@
 
 namespace SprykerShop\Yves\ProductGroupWidget\Plugin\ShopUi;
 
+use Generated\Shared\Transfer\ProductViewTransfer;
 use Spryker\Yves\Kernel\Widget\AbstractWidgetPlugin;
 use SprykerShop\Yves\ProductGroupWidget\Widget\ProductGroupWidget;
 use SprykerShop\Yves\ShopUi\Dependency\Plugin\ProductGroupWidget\ProductGroupWidgetPluginInterface;
@@ -24,9 +25,9 @@ class ProductGroupWidgetPlugin extends AbstractWidgetPlugin implements ProductGr
      *
      * @return void
      */
-    public function initialize($idProductAbstract, $template): void
+    public function initialize(ProductViewTransfer $productViewTransfer, $template): void
     {
-        $widget = new ProductGroupWidget($idProductAbstract);
+        $widget = new ProductGroupWidget($productViewTransfer);
 
         $this->parameters = $widget->getParameters();
         $this->addParameter('template', $template);

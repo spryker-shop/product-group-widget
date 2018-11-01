@@ -7,6 +7,7 @@
 
 namespace SprykerShop\Yves\ProductGroupWidget\Widget;
 
+use Generated\Shared\Transfer\ProductViewTransfer;
 use Spryker\Yves\Kernel\Widget\AbstractWidget;
 
 /**
@@ -17,10 +18,10 @@ class ProductGroupWidget extends AbstractWidget
     /**
      * @param int $idProductAbstract
      */
-    public function __construct(int $idProductAbstract)
+    public function __construct(ProductViewTransfer $productViewTransfer)
     {
-        $this->addParameter('productGroupItems', $this->getProductGroups($idProductAbstract))
-            ->addParameter('idProductAbstract', $idProductAbstract);
+        $this->addParameter('productGroupItems', $this->getProductGroups($productViewTransfer))
+            ->addParameter('idProductAbstract', $productViewTransfer->getIdProductAbstract());
     }
 
     /**
@@ -48,13 +49,18 @@ class ProductGroupWidget extends AbstractWidget
      *
      * @return \Generated\Shared\Transfer\ProductViewTransfer[]
      */
-    protected function getProductGroups(int $idProductAbstract): array
+    protected function getProductGroups(ProductViewTransfer $productViewTransfer): array
     {
-        $productGroup = $this->getFactory()->getProductGroupStorageClient()->findProductGroupItemsByIdProductAbstract($idProductAbstract);
-        $productViewTransfers = [];
+        $productGroup = $this->getFactory()->getProductGroupStorageClient()->findProductGroupItemsByIdProductAbstract($productViewTransfer->getIdProductAbstract());
+        $productViewTransfers = [$productViewTransfer];
         $productStorageClient = $this->getFactory()->getProductStorageClient();
 
         foreach ($productGroup->getGroupProductAbstractIds() as $idProductAbstract) {
+            if($idProductAbstract === $productViewTransfer->getIdProductAbstract()) {
+                $productViewTransfers[] = $productViewTransfer;
+                continue;
+            }
+
             $productData = $productStorageClient->findProductAbstractStorageData($idProductAbstract, $this->getLocale());
             if (!$productData) {
                 continue;
