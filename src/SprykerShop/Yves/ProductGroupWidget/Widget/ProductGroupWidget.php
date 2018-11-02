@@ -8,6 +8,8 @@
 namespace SprykerShop\Yves\ProductGroupWidget\Widget;
 
 use Generated\Shared\Transfer\ProductViewTransfer;
+use Spryker\Client\Customer\CustomerClient;
+use Spryker\Client\Price\PriceClient;
 use Spryker\Yves\Kernel\Widget\AbstractWidget;
 
 /**
@@ -55,6 +57,9 @@ class ProductGroupWidget extends AbstractWidget
         $productViewTransfers = [$productViewTransfer];
         $productStorageClient = $this->getFactory()->getProductStorageClient();
 
+        $customer = (new CustomerClient())->getCustomer();
+        $priceMode = (new PriceClient())->getCurrentPriceMode();
+
         foreach ($productGroup->getGroupProductAbstractIds() as $idProductAbstract) {
             if($idProductAbstract === $productViewTransfer->getIdProductAbstract()) {
                 $productViewTransfers[] = $productViewTransfer;
@@ -66,7 +71,7 @@ class ProductGroupWidget extends AbstractWidget
                 continue;
             }
 
-            $productViewTransfers[] = $productStorageClient->mapProductStorageData($productData, $this->getLocale());
+            $productViewTransfers[] = $productStorageClient->mapProductStorageData($productData, $this->getLocale(), [], $customer, $priceMode);
         }
 
         return $productViewTransfers;
