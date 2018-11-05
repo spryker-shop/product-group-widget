@@ -54,26 +54,25 @@ class ProductGroupWidget extends AbstractWidget
     protected function getProductGroups(ProductViewTransfer $productViewTransfer): array
     {
         $productGroup = $this->getFactory()->getProductGroupStorageClient()->findProductGroupItemsByIdProductAbstract($productViewTransfer->getIdProductAbstract());
-        $productViewTransfers = [$productViewTransfer];
-        $productStorageClient = $this->getFactory()->getProductStorageClient();
+        $groupAbstractProductIds = $productGroup->getGroupProductAbstractIds();
+
+        foreach($groupAbstractProductIds as $index => $productAbstractId) {
+            if($productAbstractId === $productViewTransfer->getIdProductAbstract()) {
+                unset($productAbstractId[$index]);
+            }
+        }
 
         $customer = (new CustomerClient())->getCustomer();
         $priceMode = (new PriceClient())->getCurrentPriceMode();
 
-        foreach ($productGroup->getGroupProductAbstractIds() as $idProductAbstract) {
-            if($idProductAbstract === $productViewTransfer->getIdProductAbstract()) {
-                $productViewTransfers[] = $productViewTransfer;
-                continue;
-            }
-
-            $productData = $productStorageClient->findProductAbstractStorageData($idProductAbstract, $this->getLocale());
-            if (!$productData) {
-                continue;
-            }
-
-            $productViewTransfers[] = $productStorageClient->mapProductStorageData($productData, $this->getLocale(), [], $customer, $priceMode);
-        }
-
-        return $productViewTransfers;
+        return array_merge(
+            [$productViewTransfer],
+            $this->getFactory()->getProductStorageClient()->findMappedProductsAbstractStorageData(
+                $productGroup->getGroupProductAbstractIds(),
+                $this->getLocale(),
+                $customer,
+                $priceMode
+            )
+        );
     }
 }

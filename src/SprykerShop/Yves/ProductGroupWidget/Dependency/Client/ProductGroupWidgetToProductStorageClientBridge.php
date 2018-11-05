@@ -8,6 +8,7 @@
 namespace SprykerShop\Yves\ProductGroupWidget\Dependency\Client;
 
 use Generated\Shared\Transfer\CustomerTransfer;
+use Generated\Shared\Transfer\ProductViewTransfer;
 
 class ProductGroupWidgetToProductStorageClientBridge implements ProductGroupWidgetToProductStorageClientInterface
 {
@@ -25,28 +26,27 @@ class ProductGroupWidgetToProductStorageClientBridge implements ProductGroupWidg
     }
 
     /**
-     * @deprecated Use findProductAbstractStorageData(int $idProductAbstract, string $localeName): ?array
+     * @param array $productAbstractIds
+     * @param string $localeName
+     * @param \Generated\Shared\Transfer\CustomerTransfer|null $customerTransfer
+     * @param string|null $priceMode
      *
+     * @return \Generated\Shared\Transfer\ProductViewTransfer[]|null
+     */
+    public function findMappedProductsAbstractStorageData(array $productAbstractIds, string $localeName, CustomerTransfer $customerTransfer = null, string $priceMode = null): ?array
+    {
+        return $this->productStorageClient->findMappedProductsAbstractStorageData($productAbstractIds, $localeName, $customerTransfer, $priceMode);
+    }
+
+    /**
      * @param int $idProductAbstract
      * @param string $localeName
      *
      * @return array
      */
-    public function getProductAbstractStorageData($idProductAbstract, $localeName)
+    public function getProductAbstractStorageData($idProductAbstract, $localeName): array
     {
         return $this->productStorageClient->getProductAbstractStorageData($idProductAbstract, $localeName);
-    }
-
-    /**
-     * @param array $data
-     * @param string $localeName
-     * @param array $selectedAttributes
-     *
-     * @return \Generated\Shared\Transfer\ProductViewTransfer
-     */
-    public function mapProductStorageData(array $data, $localeName, array $selectedAttributes = [], ?CustomerTransfer $customerTransfer = null, string $priceMode = null)
-    {
-        return $this->productStorageClient->mapProductStorageData($data, $localeName, $selectedAttributes, $customerTransfer, $priceMode);
     }
 
     /**
@@ -58,5 +58,17 @@ class ProductGroupWidgetToProductStorageClientBridge implements ProductGroupWidg
     public function findProductAbstractStorageData(int $idProductAbstract, string $localeName): ?array
     {
         return $this->productStorageClient->findProductAbstractStorageData($idProductAbstract, $localeName);
+    }
+
+    /**
+     * @param array $data
+     * @param string $localeName
+     * @param array $selectedAttributes
+     *
+     * @return \Generated\Shared\Transfer\ProductViewTransfer
+     */
+    public function mapProductStorageData(array $data, $localeName, array $selectedAttributes = [], CustomerTransfer $customerTransfer = null, string $priceMode = null): ProductViewTransfer
+    {
+        return $this->productStorageClient->mapProductStorageData($data, $localeName, $selectedAttributes, $customerTransfer, $priceMode);
     }
 }
