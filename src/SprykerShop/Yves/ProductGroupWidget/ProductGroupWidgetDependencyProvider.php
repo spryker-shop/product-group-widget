@@ -77,11 +77,6 @@ class ProductGroupWidgetDependencyProvider extends AbstractBundleDependencyProvi
         return $container;
     }
 
-    /**
-     * @param \Spryker\Yves\Kernel\Container $container
-     *
-     * @return \Spryker\Yves\Kernel\Container
-     */
     protected function addProductViewExpanderPlugins(Container $container): Container
     {
         $container->set(static::PLUGIN_PRODUCT_VIEW_EXPANDERS, function () {
@@ -91,11 +86,6 @@ class ProductGroupWidgetDependencyProvider extends AbstractBundleDependencyProvi
         return $container;
     }
 
-    /**
-     * @param \Spryker\Yves\Kernel\Container $container
-     *
-     * @return \Spryker\Yves\Kernel\Container
-     */
     protected function addProductViewBulkExpanderPlugins(Container $container): Container
     {
         $container->set(static::PLUGINS_PRODUCT_VIEW_BULK_EXPANDERS, function () {

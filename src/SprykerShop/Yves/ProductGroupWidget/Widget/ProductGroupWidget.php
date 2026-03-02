@@ -14,9 +14,6 @@ use Spryker\Yves\Kernel\Widget\AbstractWidget;
  */
 class ProductGroupWidget extends AbstractWidget
 {
-    /**
-     * @param int $idProductAbstract
-     */
     public function __construct(int $idProductAbstract)
     {
         $this->addParameter('productGroupItems', $this->getProductGroups($idProductAbstract))

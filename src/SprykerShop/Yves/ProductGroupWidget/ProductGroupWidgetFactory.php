@@ -15,17 +15,11 @@ use SprykerShop\Yves\ProductGroupWidget\Reader\ProductGroupReaderInterface;
 
 class ProductGroupWidgetFactory extends AbstractFactory
 {
-    /**
-     * @return \SprykerShop\Yves\ProductGroupWidget\Dependency\Client\ProductGroupWidgetToProductGroupStorageClientInterface
-     */
     public function getProductGroupStorageClient(): ProductGroupWidgetToProductGroupStorageClientInterface
     {
         return $this->getProvidedDependency(ProductGroupWidgetDependencyProvider::CLIENT_PRODUCT_GROUP_STORAGE);
     }
 
-    /**
-     * @return \SprykerShop\Yves\ProductGroupWidget\Dependency\Client\ProductGroupWidgetToProductStorageClientInterface
-     */
     public function getProductStorageClient(): ProductGroupWidgetToProductStorageClientInterface
     {
         return $this->getProvidedDependency(ProductGroupWidgetDependencyProvider::CLIENT_PRODUCT_STORAGE);
@@ -47,9 +41,6 @@ class ProductGroupWidgetFactory extends AbstractFactory
         return $this->getProvidedDependency(ProductGroupWidgetDependencyProvider::PLUGINS_PRODUCT_VIEW_BULK_EXPANDERS);
     }
 
-    /**
-     * @return \SprykerShop\Yves\ProductGroupWidget\Reader\ProductGroupReaderInterface
-     */
     public function getProductGroupReader(): ProductGroupReaderInterface
     {
         return new ProductGroupReader(

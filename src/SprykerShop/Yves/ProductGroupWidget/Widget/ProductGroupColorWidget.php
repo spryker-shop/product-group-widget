@@ -14,10 +14,6 @@ use Spryker\Yves\Kernel\Widget\AbstractWidget;
  */
 class ProductGroupColorWidget extends AbstractWidget
 {
-    /**
-     * @param int $idProductAbstract
-     * @param array $selectedAttributes
-     */
     public function __construct(int $idProductAbstract, array $selectedAttributes = [])
     {
         $productViewTransfers = $this->getFactory()
@@ -28,17 +24,11 @@ class ProductGroupColorWidget extends AbstractWidget
             ->addParameter('idProductAbstract', $idProductAbstract);
     }
 
-    /**
-     * @return string
-     */
     public static function getName(): string
     {
         return 'ProductGroupColorWidget';
     }
 
-    /**
-     * @return string
-     */
     public static function getTemplate(): string
     {
         return '@ProductGroupWidget/views/product-group/product-group.twig';

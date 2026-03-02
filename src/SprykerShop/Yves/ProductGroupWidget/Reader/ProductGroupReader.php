@@ -99,11 +99,6 @@ class ProductGroupReader implements ProductGroupReaderInterface
         return $productViewTransfers;
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\ProductViewTransfer $productViewTransfer
-     *
-     * @return \Generated\Shared\Transfer\ProductViewTransfer
-     */
     protected function expandProductViewTransfer(ProductViewTransfer $productViewTransfer): ProductViewTransfer
     {
         foreach ($this->productViewExpanderPlugins as $productViewExpanderPlugin) {
