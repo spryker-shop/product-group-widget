@@ -25,21 +25,23 @@
 
     {% set productSku = item.sku %}
     {% set isAvailable = productSku and item.available and item.idProductConcrete %}
+    {% set hasDefaultPrice = item.prices['DEFAULT'] is defined %}
+    {% set itemUrl = item.url ?: '' %}
 
     {% set dataAttributesList = {
         type: 'button',
         'data-product-image-src': item.images[0].externalUrlSmall ?? '',
         'data-product-image-alt': item.images[0].altText ?? item.name,
         'data-product-labels': labels | json_encode,
-        'data-product-name': item.name ?: '',
-        'data-product-rating': item.rating ? item.rating.averageRating,
-        'data-product-default-price': item.prices['DEFAULT'] is defined ? (item.prices['DEFAULT'] | money),
-        'data-product-price': item.prices['DEFAULT'] is defined ? item.prices['DEFAULT'],
-        'data-product-original-price': item.prices['ORIGINAL'] is defined ? (item.prices['ORIGINAL'] | money),
-        'data-product-detail-page-url': item.url ? (functionExists('generatePath') ? generatePath(item.url) : item.url) : '',
-        'data-product-add-to-cart-url': productSku ? path('cart/add', {sku: productSku}),
-        'data-product-ajax-add-to-cart-url': isAvailable ? path('cart/add-ajax', {sku: productSku}),
-        'data-product-add-to-cart-form-action': productSku ? path('cart/add', {sku: productSku}),
+        'data-product-name': item.name ?: '' ,
+        'data-product-rating': item.rating.averageRating ?? null,
+        'data-product-default-price': hasDefaultPrice ? (item.prices['DEFAULT'] | money) : null,
+        'data-product-price': hasDefaultPrice ? item.prices['DEFAULT'] : null,
+        'data-product-original-price': item.prices['ORIGINAL'] is defined ? (item.prices['ORIGINAL'] | money) : null,
+        'data-product-detail-page-url': itemUrl ? (functionExists('generatePath') ? generatePath(itemUrl) : itemUrl) : '',
+        'data-product-add-to-cart-url': productSku ? path('cart/add', {sku: productSku}) : null,
+        'data-product-ajax-add-to-cart-url': isAvailable ? path('cart/add-ajax', {sku: productSku}) : null,
+        'data-product-add-to-cart-form-action': productSku ? path('cart/add', {sku: productSku}) : null,
         'data-product-sku': productSku,
         'data-product-abstract-sku': item.abstractSku,
     } %}
