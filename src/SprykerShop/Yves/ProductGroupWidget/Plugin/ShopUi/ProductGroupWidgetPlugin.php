@@ -19,10 +19,10 @@ use SprykerShop\Yves\ShopUi\Dependency\Plugin\ProductGroupWidget\ProductGroupWid
 class ProductGroupWidgetPlugin extends AbstractWidgetPlugin implements ProductGroupWidgetPluginInterface
 {
     /**
+     * {@inheritDoc}
+     *
      * @param int $idProductAbstract
      * @param string $template
-     *
-     * @return void
      */
     public function initialize($idProductAbstract, $template): void
     {
@@ -33,9 +33,9 @@ class ProductGroupWidgetPlugin extends AbstractWidgetPlugin implements ProductGr
     }
 
     /**
-     * @api
+     * {@inheritDoc}
      *
-     * @return string
+     * @api
      */
     public static function getName(): string
     {
@@ -43,9 +43,9 @@ class ProductGroupWidgetPlugin extends AbstractWidgetPlugin implements ProductGr
     }
 
     /**
-     * @api
+     * {@inheritDoc}
      *
-     * @return string
+     * @api
      */
     public static function getTemplate(): string
     {
