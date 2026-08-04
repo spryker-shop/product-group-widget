@@ -1,9 +1,15 @@
+@use 'sass:meta';
+
 $color-selector-size: 1.5rem;
 
 @mixin product-group-widget-color-selector($name: '.color-selector') {
     #{$name} {
         display: flex;
         cursor: default;
+
+        @if meta.mixin-exists(product-group-widget-color-selector-base-hook) {
+            @include product-group-widget-color-selector-base-hook;
+        }
 
         &__item {
             @include helper-effect-transition(border-color opacity);

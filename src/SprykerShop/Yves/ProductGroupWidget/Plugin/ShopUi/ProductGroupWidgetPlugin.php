@@ -9,15 +9,19 @@ namespace SprykerShop\Yves\ProductGroupWidget\Plugin\ShopUi;
 
 use Spryker\Yves\Kernel\Widget\AbstractWidgetPlugin;
 use SprykerShop\Yves\ProductGroupWidget\Widget\ProductGroupWidget;
-use SprykerShop\Yves\ShopUi\Dependency\Plugin\ProductGroupWidget\ProductGroupWidgetPluginInterface;
 
 /**
  * @deprecated Use {@link \SprykerShop\Yves\ProductGroupWidget\Widget\ProductGroupWidget} instead.
  *
  * @method \SprykerShop\Yves\ProductGroupWidget\ProductGroupWidgetFactory getFactory()
  */
-class ProductGroupWidgetPlugin extends AbstractWidgetPlugin implements ProductGroupWidgetPluginInterface
+class ProductGroupWidgetPlugin extends AbstractWidgetPlugin
 {
+    /**
+     * @var string
+     */
+    public const NAME = 'ProductGroupWidgetPlugin';
+
     /**
      * {@inheritDoc}
      *

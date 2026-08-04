@@ -4,8 +4,6 @@ export default class ColorSelector extends Component {
     protected triggers: HTMLElement[];
     protected currentSelection: HTMLElement;
 
-    protected readyCallback(): void {}
-
     protected init(): void {
         this.triggers = <HTMLElement[]>Array.from(this.getElementsByClassName(`${this.jsName}__item`));
 
