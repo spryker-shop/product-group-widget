@@ -34,6 +34,11 @@ class ProductGroupReader implements ProductGroupReaderInterface
     protected $productGroupStorageClient;
 
     /**
+     * @var array<string, \Generated\Shared\Transfer\ProductViewTransfer>
+     */
+    protected static array $expandedProductViewTransferCache = [];
+
+    /**
      * @param \SprykerShop\Yves\ProductGroupWidget\Dependency\Client\ProductGroupWidgetToProductGroupStorageClientInterface $productGroupStorageClient
      * @param \SprykerShop\Yves\ProductGroupWidget\Dependency\Client\ProductGroupWidgetToProductStorageClientInterface $productStorageClient
      * @param array<\SprykerShop\Yves\ProductGroupWidgetExtension\Dependency\Plugin\ProductViewExpanderPluginInterface> $productViewExpanderPlugins
@@ -61,9 +66,54 @@ class ProductGroupReader implements ProductGroupReaderInterface
     public function getProductGroups(int $idProductAbstract, string $localeName, array $selectedAttributes = []): array
     {
         $productViewTransfers = $this->getProductViewTransfers($idProductAbstract, $localeName, $selectedAttributes);
-        $productViewTransfers = $this->expandProductViewBulkTransfers($productViewTransfers);
 
-        return $this->getExpandedProductViewTransfers($productViewTransfers);
+        return $this->expandProductViewTransfersOnce($productViewTransfers, $localeName, $selectedAttributes);
+    }
+
+    /**
+     * Product groups on a page share the same members (color variants), so the same product view transfer
+     * is requested by every sibling tile. The expander plugins (labels, reviews) do storage lookups per item,
+     * so they are executed only once per product view transfer within a request and reused for the siblings.
+     *
+     * @param array<\Generated\Shared\Transfer\ProductViewTransfer> $productViewTransfers
+     * @param string $localeName
+     * @param array $selectedAttributes
+     *
+     * @return array<\Generated\Shared\Transfer\ProductViewTransfer>
+     */
+    protected function expandProductViewTransfersOnce(array $productViewTransfers, string $localeName, array $selectedAttributes): array
+    {
+        $notExpandedProductViewTransfers = [];
+        foreach ($productViewTransfers as $productViewTransfer) {
+            $cacheKey = $this->generateProductViewTransferCacheKey($productViewTransfer->getIdProductAbstract(), $localeName, $selectedAttributes);
+            if (isset(static::$expandedProductViewTransferCache[$cacheKey])) {
+                continue;
+            }
+
+            $notExpandedProductViewTransfers[] = $productViewTransfer;
+        }
+
+        if ($notExpandedProductViewTransfers !== []) {
+            $notExpandedProductViewTransfers = $this->expandProductViewBulkTransfers($notExpandedProductViewTransfers);
+            $this->getExpandedProductViewTransfers($notExpandedProductViewTransfers);
+
+            foreach ($notExpandedProductViewTransfers as $productViewTransfer) {
+                $cacheKey = $this->generateProductViewTransferCacheKey($productViewTransfer->getIdProductAbstract(), $localeName, $selectedAttributes);
+                static::$expandedProductViewTransferCache[$cacheKey] = $productViewTransfer;
+            }
+        }
+
+        foreach ($productViewTransfers as $key => $productViewTransfer) {
+            $cacheKey = $this->generateProductViewTransferCacheKey($productViewTransfer->getIdProductAbstract(), $localeName, $selectedAttributes);
+            $productViewTransfers[$key] = static::$expandedProductViewTransferCache[$cacheKey] ?? $productViewTransfer;
+        }
+
+        return $productViewTransfers;
+    }
+
+    protected function generateProductViewTransferCacheKey(?int $idProductAbstract, string $localeName, array $selectedAttributes): string
+    {
+        return sprintf('%s:%s:%s', $localeName, (string)$idProductAbstract, json_encode($selectedAttributes));
     }
 
     /**
@@ -77,12 +127,30 @@ class ProductGroupReader implements ProductGroupReaderInterface
     {
         $productAbstractGroupStorageTransfer = $this->productGroupStorageClient
             ->findProductGroupItemsByIdProductAbstract($idProductAbstract);
+        $groupProductAbstractIds = $productAbstractGroupStorageTransfer->getGroupProductAbstractIds();
 
         return $this->productStorageClient->getProductAbstractViewTransfers(
-            $productAbstractGroupStorageTransfer->getGroupProductAbstractIds(),
+            $groupProductAbstractIds,
             $localeName,
-            $selectedAttributes,
+            $this->getSelectedAttributesIndexedByIdProductAbstract($groupProductAbstractIds, $selectedAttributes),
         );
+    }
+
+    /**
+     * @param array<int> $groupProductAbstractIds
+     * @param array<string, mixed> $selectedAttributes
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected function getSelectedAttributesIndexedByIdProductAbstract(
+        array $groupProductAbstractIds,
+        array $selectedAttributes
+    ): array {
+        if ($selectedAttributes === []) {
+            return [];
+        }
+
+        return array_fill_keys($groupProductAbstractIds, $selectedAttributes);
     }
 
     /**

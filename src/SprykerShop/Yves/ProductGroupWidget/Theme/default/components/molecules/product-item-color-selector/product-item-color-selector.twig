@@ -27,6 +27,7 @@
     {% set isAvailable = productSku and item.available and item.idProductConcrete %}
     {% set hasDefaultPrice = item.prices['DEFAULT'] is defined %}
     {% set itemUrl = item.url ?: '' %}
+    {% set addToCartUrl = productSku ? path('cart/add', {sku: productSku}) : null %}
 
     {% set dataAttributesList = {
         type: 'button',
@@ -39,9 +40,9 @@
         'data-product-price': hasDefaultPrice ? item.prices['DEFAULT'] : null,
         'data-product-original-price': item.prices['ORIGINAL'] is defined ? (item.prices['ORIGINAL'] | money) : null,
         'data-product-detail-page-url': itemUrl ? (functionExists('generatePath') ? generatePath(itemUrl) : itemUrl) : '',
-        'data-product-add-to-cart-url': productSku ? path('cart/add', {sku: productSku}) : null,
+        'data-product-add-to-cart-url': addToCartUrl,
         'data-product-ajax-add-to-cart-url': isAvailable ? path('cart/add-ajax', {sku: productSku}) : null,
-        'data-product-add-to-cart-form-action': productSku ? path('cart/add', {sku: productSku}) : null,
+        'data-product-add-to-cart-form-action': addToCartUrl,
         'data-product-sku': productSku,
         'data-product-abstract-sku': item.abstractSku,
     } %}
